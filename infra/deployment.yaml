@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: alerts
-          image: ghcr.io/l1mb0000/alerts:1af53edc42a488d00d6f9575d40fb55e516b1927
+          image: ghcr.io/l1mb0000/alerts:d4cf87410ec130d6df1b7d173e2884fbea96c402
           imagePullPolicy: Always
           ports:
             - containerPort: 8087
