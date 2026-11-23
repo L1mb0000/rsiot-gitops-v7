@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alerts
+  namespace: gitops07
+  labels:
+    app: alerts
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "7"
+    org.bstu.slug: "230236-v7"
+spec:
+  type: ClusterIP
+  selector:
+    app: alerts
+  ports:
+    - name: http
+      port: 8087
+      targetPort: 8087

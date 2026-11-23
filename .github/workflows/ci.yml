@@ -1,0 +1,50 @@
+name: gitops-ci
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-push-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run unit tests
+        working-directory: app
+        run: python -m unittest discover -s tests -v
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        working-directory: app
+        run: |
+          IMAGE="ghcr.io/l1mb0000/alerts:${{ github.sha }}"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Bump image tag in infra/deployment.yaml
+        run: |
+          sed -i "s|image: ghcr.io/l1mb0000/alerts:.*|image: ghcr.io/l1mb0000/alerts:${{ github.sha }}|g" infra/deployment.yaml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add infra/deployment.yaml
+          git diff --cached --quiet || git commit -m "chore(infra): bump alerts image to ${{ github.sha }}"
+          git push

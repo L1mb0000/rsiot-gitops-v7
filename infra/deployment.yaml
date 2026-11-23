@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alerts
+  namespace: gitops07
+  labels:
+    app: alerts
+    org.bstu.course: "RSIOT"
+    org.bstu.variant: "7"
+    org.bstu.slug: "230236-v7"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: alerts
+  template:
+    metadata:
+      labels:
+        app: alerts
+        org.bstu.course: "RSIOT"
+        org.bstu.variant: "7"
+        org.bstu.slug: "230236-v7"
+    spec:
+      containers:
+        - name: alerts
+          image: ghcr.io/l1mb0000/alerts:init
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8087
+          envFrom:
+            - configMapRef:
+                name: alerts-config
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8087
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8087
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "128Mi"
