@@ -4,7 +4,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 APP_NAME = os.getenv("APP_NAME", "alerts")
 APP_PORT = int(os.getenv("APP_PORT", "8087"))
-APP_VERSION = os.getenv("APP_VERSION", "v1")
+APP_VERSION = os.getenv("APP_VERSION", "v2")
 MESSAGE = os.getenv("MESSAGE", "Alerts service v1")
 
 
